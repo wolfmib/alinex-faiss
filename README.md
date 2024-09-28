@@ -116,7 +116,7 @@ Response:
 
 - **Clone the repository**:
   ```bash
-  git clone https://github.com/your-repo/alinex-faiss.git
+  git clone https://github.com/wolfmib/alinex-faiss.git
   ```
 - **Set up the environment**:
   - Install Python dependencies: `pip install -r requirements.txt`
@@ -130,10 +130,10 @@ Response:
 ## License
 
 This project is licensed under the MIT License. Please remember to attribute contributions where applicable.
-```
+
 
 ### How to Use It:
-- Replace the placeholders like `your_token` and `your-repo` with actual values.
+- Replace the placeholders like `your_token`  with actual values.
 - The Markdown is structured to be readable and organized with clear sections for features, API endpoints, and usage examples.
 
 Let me know if you need any further adjustments!
