@@ -1,0 +1,161 @@
+
+PYTHONPATH=. python3 main.py
+
+
+curl -X POST http://localhost:5000/vector_token/search/5 \
+     -H "Content-Type: application/json" \
+     -d '{"auth_token": "OiOPclUPQUVlPkAe", "input_query_context": "who want sl"}'
+
+
+
+
+curl -X POST http://localhost:5000/create/test_store
+
+
+curl -X POST http://localhost:5000/vector-token/index -H "Content-Type: application/json" -d '{"auth_token":"OiOPclUPQUVlPkAe", "texts":"I wana sleep ","subject":"Test Subject"}'
+
+
+
+
+
+pip install python-dotenv
+
+
+
+
+
+Great! Now that the import issue is resolved, the script ran without errors. You're ready to move forward.
+
+### Next Steps:
+1. **Integrate the Flask App**:
+   - Make sure the Flask app is running so that you can test the API endpoints. You’ll need to set up the app in the main file and ensure the routes are correctly attached to the app.
+
+2. **Run the Flask App**:
+   Here's how you can integrate the Flask app and run the server:
+
+   In your main `app.py` (or similar file):
+
+   ```python
+   from flask import Flask
+   from routes.endpoints import routes
+
+   app = Flask(__name__)
+
+   # Register the blueprint
+   app.register_blueprint(routes)
+
+   if __name__ == '__main__':
+       app.run(host='0.0.0.0', port=5000, debug=True)
+   ```
+
+   Then you can run the Flask app with:
+
+   ```bash
+   PYTHONPATH=. python3 app.py
+   ```
+
+3. **Test the API Endpoints**:
+   You can use a tool like **Postman** or **cURL** to test the API endpoints:
+   
+   - **Create Vector Store**: 
+     ```bash
+     curl -X POST http://localhost:5000/create/test_store
+     ```
+
+   - **Add Vectors**: 
+     ```bash
+
+     curl -X POST http://localhost:5000/vector-token/index -H "Content-Type: application/json" -d '{"auth_token":"PaIh9JXPgg2T70j5","texts":"test text","subject":"Test Subject"}'
+     ```
+
+   - **Search Vectors**: 
+     ```bash
+     curl -X POST http://localhost:5000/vector_token/search/1 -H "Content-Type: application/json" -d '{"auth_token":"<token>","input_query_context":"search text"}'
+     ```
+
+4. **Write Tests for the Endpoints**:
+   Once everything works manually, we can write some unit tests using Flask's test client to simulate requests to these endpoints.
+
+Would you like to test it with cURL/Postman first or proceed with writing automated tests for the endpoints? Let me know!
+
+
+
+
+PYTHONPATH=. python3 routes/endpoints.py
+
+pip install python-dotenv
+
+pip install openai
+
+
+
+## Test 
+alinex-faiss]$ python -m unittest tests.test_vector_store
+
+
+
+
+python -m unittest discover -s tests
+
+
+
+Priorities:
+vectors/vector_store.py:
+This will handle the core FAISS functionality: creating a vector index, adding vectors, and performing searches.
+We will define reusable methods for:
+Initializing a FAISS index.
+Adding vectors with metadata.
+Searching vectors.
+tests/test_vector_store.py:
+Write unit tests to validate that the vector store behaves as expected. We’ll cover:
+Index creation.
+Adding vectors.
+Searching vectors.
+routes/endpoints.py:
+After confirming the vector store works, we’ll move to define the Flask routes for the server.
+error_handlers/handlers.py:
+Finally, we’ll integrate custom error handling to ensure the app responds gracefully to incorrect requests.
+
+
+
+pip install pytz (alread had)
+pip install datetime
+pip install flask faiss-cpu
+
+
+
+python3 -m venv env
+source env/bin/activate  # On Windows use: env\Scripts\activate
+
+
+
+
+alinex-faiss/
+│
+├── app.py                  # Main entry point for Flask server
+├── requirements.txt        # For storing dependencies
+├── .env                    # Environment variables (secret tokens, settings, etc.)
+├── .gitignore              # Ignore unnecessary files (like __pycache__)
+│
+├── vectors/
+│   ├── vector_store.py     # Core logic for managing FAISS vector stores
+│   ├── __init__.py         # To make this a package
+│
+├── routes/
+│   ├── endpoints.py        # Flask routes, endpoints (separate business logic)
+│   ├── __init__.py         # To make this a package
+│
+├── error_handlers/
+│   ├── handlers.py         # Custom error handling logic (404, 401, etc.)
+│   ├── __init__.py         # To make this a package
+│
+└── tests/
+    ├── test_app.py         # Unit tests for the Flask server and endpoints
+    ├── __init__.py         # To make this a package
+
+
+
+HTTP routes in routes/endpoints.py.
+Core FAISS vector logic in vectors/vector_store.py.
+Error handling in error_handlers/handlers.py.
+Unit testing in tests/.

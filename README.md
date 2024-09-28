@@ -1,61 +1,131 @@
-# alinex-faiss
-linex-FAISS is a scalable, cloud-agnostic FAISS vector search server built using Flask and Python. This server can be deployed on any cloud platform and is optimized for managing vector databases for AI applications.
+Sure! Here's a Markdown bullet point structure that you can use for your repository update:
 
+```markdown
+# FAISS Vector Store API
 
-
-## Why Use Alinex-FAISS?
-
-While managed services like Pinecone offer convenience, their costs can quickly escalate, especially for high-frequency operations. Alinex-FAISS provides a cost-effective alternative by enabling you to self-host your vector search services (e.g., on AWS). By running your own FAISS server, you retain full control over the infrastructure and can significantly reduce your operating expenses.
-
-### Cost Comparison: Pinecone vs. Self-Hosted FAISS (AWS)
-
-- **Pinecone**: Managed service, easy to set up but can be expensive. For example, frequent upserts and retrievals can lead to monthly costs of $50 or more, depending on your usage.
-- **Self-Hosted FAISS (AWS)**: Hosting your own FAISS server on an AWS t3.medium instance (for 8 hours a day, 22 working days per month) can cost as low as $7.32 per month. Bandwidth costs are minimal if your data usage stays under 1 GB per month.
-
-By choosing self-hosting with Alinex-FAISS, you can balance performance and cost, especially if you require high-frequency vector search operations.
-
----
+This project provides a Flask-based API for managing FAISS vector stores with OpenAI embeddings. You can create vector stores, add vectors to them, and perform similarity searches.
 
 ## Features
 
-- Fast and efficient vector search powered by FAISS
-- Flask-based server for easy integration with cloud platforms
-- Cloud-agnostic, deployable on AWS, GCP, Azure, or any cloud provider
-- Configurable for various use cases (recommendation systems, semantic search, etc.)
+- **Create FAISS vector stores**: Easily initialize new FAISS vector stores with a unique token.
+- **Add vectors**: Use OpenAI embeddings to generate vectors and add them to the store.
+- **Similarity search**: Perform top-K searches to find the most similar vectors based on input text.
+- **JSON serializable responses**: Ensure clean and valid JSON responses for all API endpoints.
+- **Memory management**: Vector stores are loaded and released from memory efficiently.
 
-## Getting Started
+## API Endpoints
 
-### Prerequisites
+### 1. Create a Vector Store
 
-- Python 3.x
-- Flask
-- FAISS
-- (Optional) Docker for containerized deployment
+- **Endpoint**: `/create/<name>`
+- **Method**: `POST`
+- **Description**: Creates a new FAISS vector store and returns a unique token.
 
-### Installation
+Example request:
+```bash
+curl -X POST http://localhost:5000/create/my_store
+```
 
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/your_username/alinex-faiss.git
-   cd alinex-faiss
+Response:
+```json
+{
+  "token": "unique_token"
+}
+```
 
-2. Install the dependencies:
-    ```bash    
-    pip install -r requirements.txt
+### 2. Add Vectors to a Store
 
-3. Start the server:
-    ```bash 
-    python app.py
+- **Endpoint**: `/vector-token/index`
+- **Method**: `POST`
+- **Description**: Adds vectors to the store using an auth token, with automatic metadata handling.
 
+Example request:
+```bash
+curl -X POST http://localhost:5000/vector-token/index \
+     -H "Content-Type: application/json" \
+     -d '{"auth_token":"your_token", "texts": "your input text", "subject": "Test Subject"}'
+```
 
-### Usage
-The server provides RESTful endpoints to interact with the FAISS database. You can use the following endpoints:
+Response:
+```json
+{
+  "message": "Vector added successfully"
+}
+```
 
-- POST /index: Add vectors to the FAISS index
-- GET /search: Search for similar vectors
+### 3. Search for Vectors
 
-### Contributing
-If you find this project useful, kindly acknowledge or link back to this repository in your project. Your appreciation is highly valued!
+- **Endpoint**: `/vector_token/search/<k>`
+- **Method**: `POST`
+- **Description**: Performs a top-K similarity search based on input query context.
 
-### License
-This project is licensed under the MIT License - see the LICENSE file for details.
+Example request:
+```bash
+curl -X POST http://localhost:5000/vector_token/search/5 \
+     -H "Content-Type: application/json" \
+     -d '{"auth_token":"your_token", "input_query_context": "search text"}'
+```
+
+Response:
+```json
+{
+  "results": [
+    {
+      "vector_id": 1,
+      "distance": 290884,
+      "metadata": {
+        "input_text": "I wana sleep 4",
+        "added_on": "2024-09-28-22-17",
+        "vector_id": 1
+      }
+    },
+    {
+      "vector_id": 0,
+      "distance": 999999,
+      "metadata": {
+        "input_text": "dummy_vector",
+        "added_on": "2024-09-28-22-17",
+        "vector_id": 0
+      }
+    }
+  ]
+}
+```
+
+## Key Implementation Details
+
+- **OpenAI Embeddings**: The API uses OpenAI's embedding model (`text-embedding-ada-002`) to generate embeddings from text.
+- **Vector Store Management**: Each vector store is associated with a unique token. Stores are saved to disk and can be loaded or released from memory when needed.
+- **Indexing and Searching**: FAISS is used for efficient vector storage and similarity searching.
+
+## Improvements
+
+- **Optimize Memory Handling**: Automatically release vector stores from memory after every operation.
+- **Distance Scaling**: Convert distances to integers by multiplying by `1,000,000` to avoid floating-point precision issues in JSON responses.
+- **Error Handling**: Added error handling for invalid tokens and indices.
+
+## How to Contribute
+
+- **Clone the repository**:
+  ```bash
+  git clone https://github.com/your-repo/alinex-faiss.git
+  ```
+- **Set up the environment**:
+  - Install Python dependencies: `pip install -r requirements.txt`
+  - Create a `.env` file and add your OpenAI API key.
+  
+- **Run Tests**:
+  ```bash
+  python -m unittest discover -s tests
+  ```
+
+## License
+
+This project is licensed under the MIT License. Please remember to attribute contributions where applicable.
+```
+
+### How to Use It:
+- Replace the placeholders like `your_token` and `your-repo` with actual values.
+- The Markdown is structured to be readable and organized with clear sections for features, API endpoints, and usage examples.
+
+Let me know if you need any further adjustments!
