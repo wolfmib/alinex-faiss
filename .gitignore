@@ -175,6 +175,11 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
+
+#vectore
+vector_stores/
+
+
 # pytype static type analyzer
 .pytype/
 

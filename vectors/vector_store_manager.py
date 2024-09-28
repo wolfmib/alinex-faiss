@@ -8,6 +8,9 @@ from datetime import datetime
 import pytz
 from dotenv import load_dotenv
 
+from logger import log  # Import the logger
+
+
 # Load environment variables from .env file
 load_dotenv()
 # Set the API key from .env
@@ -32,7 +35,7 @@ class VectorStoreManager:
     def _generate_unique_token(self):
         """Generates a unique token and ensures it doesn't exist in token_list.txt."""
         token = ''.join(random.choices(string.ascii_letters + string.digits, k=16))
-        print(f"Token created:  {token}")
+        log.debug(f"Token created:  {token}")
         if os.path.exists(self.token_file):
             with open(self.token_file, "r") as f:
                 existing_tokens = f.read().splitlines()
@@ -42,7 +45,7 @@ class VectorStoreManager:
 
     def _save_token(self, token):
         """Saves a token to the token list."""
-        print(f"Saving token to file: {token}")  # Add this line for debugging
+        log.debug(f"Saving token to file: {token}")  # Add this line for debugging
         with open(self.token_file, "a") as f:
             f.write(f"{token}\n")
 
@@ -96,27 +99,27 @@ class VectorStoreManager:
         """Adds a vector to the store identified by auth_token, along with metadata."""
         try:
             # Ensure the token is valid and exists
-            print(f"Received auth_token: {auth_token}")
+            log.debug(f"Received auth_token: {auth_token}")
             
             self._check_token_exists(auth_token)
             
-            print(f"Token {auth_token} is valid.")
+            log.debug(f"Token {auth_token} is valid.")
             
             # Load the store from disk
             self.load_vector_store(auth_token)
             
-            print(f"Vector store for token {auth_token} loaded.")
+            log.debug(f"Vector store for token {auth_token} loaded.")
             
             # Generate embedding using OpenAI
             embedding = self._get_openai_embedding(input_text)
-            print(f"Generated embedding for text: {input_text}")
+            log.debug(f"Generated embedding for text: {input_text}")
             
             embedding = np.array([embedding])  # Make it a 2D array for FAISS
 
             # Add embedding to the correct store
             self.stores[auth_token].add(embedding)
             
-            print(f"Added embedding to store for token: {auth_token}")
+            log.debug(f"Added embedding to store for token: {auth_token}")
             
             # Automatically add metadata with date
               # Ensure "vectors" exists in metadata
@@ -132,24 +135,24 @@ class VectorStoreManager:
    
             # Validate metadata length matches FAISS store
             if len(self.metadata[auth_token]["vectors"]) != self.stores[auth_token].ntotal:
-                print(f"Warning: Metadata and FAISS index out of sync! Metadata length: {len(self.metadata[auth_token]['vectors'])}, FAISS index total: {self.stores[auth_token].ntotal}")
+                log.debug(f"Warning: Metadata and FAISS index out of sync! Metadata length: {len(self.metadata[auth_token]['vectors'])}, FAISS index total: {self.stores[auth_token].ntotal}")
             
 
             # Save the updated vector store to disk
             self.save_vector_store(auth_token)
             
-            print(f"Vector store for token {auth_token} saved successfully.")
+            log.debug(f"Vector store for token {auth_token} saved successfully.")
             
             # Release the store from memory
             self.close_vector_store(auth_token)
-            print(f"Vector store for token {auth_token} released from memory.")
+            log.debug(f"Vector store for token {auth_token} released from memory.")
 
         except Exception as e:
             # Release the store from memory after search
             
             self.close_vector_store(auth_token)
         
-            print(f"Error: Close the vectore_store {str(e)}")
+            log.error(f"Error: Close the vectore_store {str(e)}")
             raise
 
 
@@ -165,23 +168,23 @@ class VectorStoreManager:
     def load_vector_store(self, auth_token):
         """Loads a FAISS vector store associated with the given auth_token from disk."""
         # Check if the token exists in token_list.txt
-        print(f"Loading vector store for token: {auth_token}")
+        log.debug(f"Loading vector store for token: {auth_token}")
    
       
         self._check_token_exists(auth_token)
 
-        print(f"Token {auth_token} exists in token_list.txt.")
+        log.debug(f"Token {auth_token} exists in token_list.txt.")
 
         # Check if the store is already loaded in memory
         if auth_token in self.stores:
-            print(f"Vector store for token {auth_token} is already loaded in memory.")
+            log.debug(f"Vector store for token {auth_token} is already loaded in memory.")
         
             return self.stores[auth_token]
 
         # Load the FAISS index from disk or raise an error if not found
         faiss_store_path = os.path.join(self.vector_store_dir, f"{auth_token}.index")
         if os.path.exists(faiss_store_path):
-            print(f"Loading FAISS index from {faiss_store_path}")
+            log.debug(f"Loading FAISS index from {faiss_store_path}")
             index = faiss.read_index(faiss_store_path)  # Load the FAISS index from disk
             self.stores[auth_token] = index
             return index
@@ -197,26 +200,26 @@ class VectorStoreManager:
 
     def search_vector_by_token_and_k(self, auth_token, search_context, k=10):
         """Searches for the top k vectors in the store associated with auth_token."""
-        print(f"Searching vector store for token: {auth_token}")
+        log.debug(f"Searching vector store for token: {auth_token}")
         
         self._check_token_exists(auth_token)
         
         # Load the store from disk
         self.load_vector_store(auth_token)
-        print(f"Vector store for token {auth_token} loaded for searching.")
+        log.debug(f"Vector store for token {auth_token} loaded for searching.")
         
         # Generate the embedding for the search context
         query_vector = self._get_openai_embedding(search_context)
-        print(f"Generated query vector for search context: {search_context}")
+        log.debug(f"Generated query vector for search context: {search_context}")
         query_vector = np.array([query_vector])  # Make it a 2D array for FAISS
 
         # Perform search
         D, I = self.stores[auth_token].search(query_vector, k)
-        print(f"Search completed. Distances: {D}, Indices: {I}")
+        log.debug(f"Search completed. Distances: {D}, Indices: {I}")
         
-        # Print metadata before filtering
-        print(f"Metadata for token {auth_token}: {self.metadata[auth_token]['vectors']}")
-        print(f"FAISS index total vectors: {self.stores[auth_token].ntotal}")
+        #  metadata before filtering
+        log.debug(f"Metadata for token {auth_token}: {self.metadata[auth_token]['vectors']}")
+        log.debug(f"FAISS index total vectors: {self.stores[auth_token].ntotal}")
         
         # Filter invalid results (e.g., distances too large or indices == -1)
         results = []
@@ -252,9 +255,9 @@ class VectorStoreManager:
                         "metadata": vector_metadata
                     })
                 else:
-                    print(f"Warning: No metadata found for vector_id {idx}, skipping this result.")
+                    log.debug(f"Warning: No metadata found for vector_id {idx}, skipping this result.")
             else:
-                print(f"Dropping invalid index {idx} with distance {distance}")
+                log.debug(f"Dropping invalid index {idx} with distance {distance}")
 
         if not results:
             return {"message": "No valid results found."}, 404  # Return 404 if no valid results found
@@ -264,8 +267,8 @@ class VectorStoreManager:
 
         # Release the store from memory after search
         self.close_vector_store(auth_token)
-        print(f"Vector store for token {auth_token} released from memory after searching.")
-        print(f"results: {results}")
+        log.debug(f"Vector store for token {auth_token} released from memory after searching.")
+        log.debug(f"results: {results}")
         return results
 
 
@@ -274,7 +277,7 @@ class VectorStoreManager:
         """Closes a vector store and removes it from memory (but keeps it on disk)."""
         if auth_token in self.stores:
             del self.stores[auth_token]
-            print(f"Vector store for token {auth_token} has been removed from memory.")
+            log.debug(f"Vector store for token {auth_token} has been removed from memory.")
         else:
-            print("No store found in memory for token")
+            log.error("No store found in memory for token")
             raise ValueError(f"No store found in memory for token '{auth_token}' to close.")

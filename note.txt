@@ -4,7 +4,7 @@ PYTHONPATH=. python3 main.py
 
 curl -X POST http://localhost:5000/vector_token/search/5 \
      -H "Content-Type: application/json" \
-     -d '{"auth_token": "OiOPclUPQUVlPkAe", "input_query_context": "who want sl"}'
+     -d '{"auth_token": "lbEQ05bAq6sQGRCs", "input_query_context": "who want sleep"}'
 
 
 
@@ -12,7 +12,7 @@ curl -X POST http://localhost:5000/vector_token/search/5 \
 curl -X POST http://localhost:5000/create/test_store
 
 
-curl -X POST http://localhost:5000/vector-token/index -H "Content-Type: application/json" -d '{"auth_token":"OiOPclUPQUVlPkAe", "texts":"I wana sleep ","subject":"Test Subject"}'
+curl -X POST http://localhost:5000/vector-token/index -H "Content-Type: application/json" -d '{"auth_token":"lbEQ05bAq6sQGRCs", "texts":"I wana sleep 4","subject":"Test Subject"}'
 
 
 
