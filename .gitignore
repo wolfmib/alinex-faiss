@@ -26,6 +26,33 @@ share/python-wheels/
 *.egg
 MANIFEST
 
+
+### 2. **.gitignore**
+
+```plaintext
+# Python-related files
+__pycache__/
+*.py[cod]
+*.egg-info/
+
+# Virtualenv
+env/
+venv/
+ENV/
+
+# Flask-related
+instance/
+*.log
+
+# Docker
+docker-compose.yml
+Dockerfile
+
+# General files
+.DS_Store
+*.swp
+
+
 # PyInstaller
 #  Usually these files are written by a python script from a template
 #  before PyInstaller builds the exe, so as to inject date/other infos into it.
