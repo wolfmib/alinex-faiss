@@ -1,6 +1,9 @@
-Sure! Here's a Markdown bullet point structure that you can use for your repository update:
 
-```markdown
+##  Use FAISS for Self-Development?
+
+🚀 FAISS to the rescue! If you're tired of high costs from services like Pinecone, especially for large-scale vector storage, using FAISS on your own AWS instance can save your budget. For example, hosting your own FAISS on a t3.medium EC2 instance can drastically cut down costs compared to the recurring fees for retrieval and upserts on Pinecone. With FAISS, you get scalable, high-performance vector searching at a fraction of the price—no subscription costs or hidden fees! Why pay more when you can build smarter? 😎
+
+
 # FAISS Vector Store API
 
 This project provides a Flask-based API for managing FAISS vector stores with OpenAI embeddings. You can create vector stores, add vectors to them, and perform similarity searches.
@@ -12,6 +15,11 @@ This project provides a Flask-based API for managing FAISS vector stores with Op
 - **Similarity search**: Perform top-K searches to find the most similar vectors based on input text.
 - **JSON serializable responses**: Ensure clean and valid JSON responses for all API endpoints.
 - **Memory management**: Vector stores are loaded and released from memory efficiently.
+
+
+## Run
+python3 main.py
+
 
 ## API Endpoints
 
