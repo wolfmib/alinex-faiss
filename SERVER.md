@@ -1,5 +1,4 @@
 
-```markdown
 
 # Deploying Nginx Combined with Python (Flask) Running on Local Port 8080
 
@@ -138,5 +137,5 @@ After deploying the Flask app behind Nginx with HTTPS enabled, you can test the 
 4. Basic **systemctl** commands help manage Nginx and the Flask app service.
 5. You can test the vector store API using simple `curl` commands with HTTPS.
 
-```
+
 
