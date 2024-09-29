@@ -1,3 +1,5 @@
+#vector_store_manager.py
+
 import faiss
 import numpy as np
 import os
@@ -7,7 +9,7 @@ import openai
 from datetime import datetime
 import pytz
 from dotenv import load_dotenv
-
+import json
 from logger import log  # Import the logger
 
 
@@ -52,6 +54,7 @@ class VectorStoreManager:
 
     def _check_token_exists(self, auth_token):
         """Checks if the token exists in token_list.txt."""
+        log.debug(f"_check_token {auth_token}")
         with open(self.token_file, "r") as f:
             tokens = f.read().splitlines()
         if auth_token not in tokens:
@@ -165,28 +168,39 @@ class VectorStoreManager:
         faiss_store_path = os.path.join(self.vector_store_dir, f"{auth_token}.index")
         faiss.write_index(self.stores[auth_token], faiss_store_path)
 
+        # 🙂 Save metadata to disk as a JSON file
+        metadata_store_path = os.path.join(self.vector_store_dir, f"{auth_token}_metadata.json")
+        with open(metadata_store_path, "w") as f:
+            json.dump(self.metadata[auth_token], f)
+        
     def load_vector_store(self, auth_token):
-        """Loads a FAISS vector store associated with the given auth_token from disk."""
+        """Loads a FAISS vector store and metadata associated with the given auth_token from disk."""
         # Check if the token exists in token_list.txt
         log.debug(f"Loading vector store for token: {auth_token}")
-   
-      
         self._check_token_exists(auth_token)
-
-        log.debug(f"Token {auth_token} exists in token_list.txt.")
 
         # Check if the store is already loaded in memory
         if auth_token in self.stores:
             log.debug(f"Vector store for token {auth_token} is already loaded in memory.")
-        
             return self.stores[auth_token]
 
-        # Load the FAISS index from disk or raise an error if not found
+        # Load the FAISS index from disk
         faiss_store_path = os.path.join(self.vector_store_dir, f"{auth_token}.index")
         if os.path.exists(faiss_store_path):
             log.debug(f"Loading FAISS index from {faiss_store_path}")
-            index = faiss.read_index(faiss_store_path)  # Load the FAISS index from disk
+            index = faiss.read_index(faiss_store_path)
             self.stores[auth_token] = index
+
+            # Load the metadata from disk
+            metadata_store_path = os.path.join(self.vector_store_dir, f"{auth_token}_metadata.json")
+            if os.path.exists(metadata_store_path):
+                with open(metadata_store_path, "r") as f:
+                    self.metadata[auth_token] = json.load(f)
+                log.debug(f"Metadata for token {auth_token} loaded from {metadata_store_path}")
+            else:
+                log.warning(f"No metadata found for token {auth_token}, creating empty metadata.")
+                self.metadata[auth_token] = {"vectors": []}
+
             return index
         else:
             raise ValueError(f"FAISS store for token '{auth_token}' not found on disk.")

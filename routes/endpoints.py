@@ -1,6 +1,10 @@
 from flask import Blueprint, request, jsonify
 from vectors.vector_store_manager import VectorStoreManager
 
+import json
+from logger import log  # Import the logger
+
+
 # Initialize Flask Blueprint
 routes = Blueprint('routes', __name__)
 
@@ -11,10 +15,12 @@ vector_manager = VectorStoreManager()
 @routes.route('/create/<name>', methods=['POST'])
 def create_vector_store(name):
     """Creates a vector store associated with a unique token."""
+    log.debug("name : ",name)
     try:
         token = vector_manager.create_by_name(name)
         return jsonify({"auth_token": token, "message": f"Vector store '{name}' created."}), 201
     except Exception as e:
+        log.error(f"Error creating vector store: {str(e)}")  # Use f-string for logging
         return jsonify({"message": str(e)}), 500
 
 
