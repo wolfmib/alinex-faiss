@@ -179,6 +179,9 @@ dmypy.json
 #vectore
 vector_stores/
 
+##ssl
+server.csr
+
 
 # pytype static type analyzer
 .pytype/
