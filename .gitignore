@@ -182,6 +182,7 @@ vector_stores/
 ##ssl
 server.csr
 faiss.jagroupai.com.csr
+not_current_used/
 
 # pytype static type analyzer
 .pytype/
